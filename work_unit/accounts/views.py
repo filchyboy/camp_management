@@ -1,20 +1,13 @@
-from django.shortcuts import render
-
-# Create your views here.
-
-from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth import login
 from django.shortcuts import render, redirect
+from django.contrib.auth.forms import UserCreationForm
 
 
-def signup(request):
+def register(request):
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
         if form.is_valid():
-            user = form.save()
-            # Log the user in.
-            login(request, user)
-            return redirect('visitor_view')
+            form.save()
+            return redirect('work_unit:homepage')
     else:
         form = UserCreationForm()
-    return render(request, 'signup.html', {'form': form})
+    return render(request, 'accounts/register.html', {'form': form})
