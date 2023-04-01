@@ -14,6 +14,8 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'work_unit',
+    'accounts',
+    'django_extensions',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -77,6 +79,8 @@ AUTH_PASSWORD_VALIDATORS = [
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
 ]
+
+AUTH_USER_MODEL = 'accounts.CustomUser'
 
 LANGUAGE_CODE = 'en-us'
 
