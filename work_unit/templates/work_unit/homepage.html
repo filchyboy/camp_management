@@ -1,14 +1,13 @@
 {% extends 'base.html' %}
 
-{% block title %}
-Home - {{ block.super }}
-{% endblock %}
-
 {% block content %}
-<h1>Welcome to the Work Unit Homepage</h1>
-<!-- Add any other content specific to the homepage here -->
+<h1>Welcome to Work Unit</h1>
+<p>This is the home page.</p>
+<p>To get started, please choose an option:</p>
+<ul>
+<li><a href="{% url 'accounts:register' %}">Register</a></li>
+<li><a href="{% url 'accounts:login' %}">Login</a></li>
+<li><a href="{% url 'accounts:logout' %}">Logout</a></li>
 
-Hello world!
-
-{% url 'accounts:register' %}
+</ul>
 {% endblock %}

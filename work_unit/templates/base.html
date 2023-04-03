@@ -1,8 +1,13 @@
+{% load static %}
 <!DOCTYPE html>
 <html>
 
 <head>
     <title>{% block title %}Default Title{% endblock %}</title>
+
+    <link rel="stylesheet" type="text/css" href="{% static 'css/reset.css' %}">
+
+
     <!-- Other common head elements like CSS, favicon, etc. -->
 </head>
 
@@ -11,6 +16,15 @@
         
         <!-- Navigation menu, logo, etc. -->
     </header>
+
+{% if messages %}
+<div class="messages">
+    {% for message in messages %}
+    <div{% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}
+</div>
+{% endfor %}
+</div>
+{% endif %}
 
     <main>
         {% block content %}
