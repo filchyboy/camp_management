@@ -23,6 +23,8 @@ INSTALLED_APPS = [
     'app.accounts.apps.AccountsConfig',
     'app.work_unit.apps.WorkUnitConfig',
     'django_extensions',
+    'allauth',
+    'allauth.account',
 ]
 
 MIDDLEWARE = [
@@ -99,3 +101,17 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGOUT_REDIRECT_URL = 'work_unit:homepage'
+
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_UNIQUE_EMAIL = True
+ACCOUNT_CONFIRM_EMAIL_ON_GET = True
+# Use this for development; replace with a suitable email backend for production
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'swingcityops@gmail.com'
+EMAIL_HOST_PASSWORD = 'bomjlwvzdqaujkcq'

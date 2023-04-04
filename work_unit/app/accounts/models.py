@@ -2,6 +2,7 @@ from django.dispatch import receiver
 from django.db.models.signals import post_save
 from django.contrib.auth.models import AbstractUser, UserManager
 from django.db import models
+from django.utils.translation import gettext_lazy as _
 
 
 class CustomUserManager(UserManager):
@@ -9,6 +10,7 @@ class CustomUserManager(UserManager):
 
 
 class CustomUser(AbstractUser):
+    email = models.EmailField(_('email address'), unique=True)  # Add this line
     objects = CustomUserManager()
 
     def __str__(self):
@@ -27,6 +29,10 @@ class UserProfile(models.Model):
         CustomUser, on_delete=models.CASCADE, related_name='profile')
     category = models.CharField(
         choices=USER_CATEGORY_CHOICES, default='member', max_length=30)
+    first_name = models.CharField(max_length=100, blank=True)
+    last_name = models.CharField(max_length=100, blank=True)
+    phone_number = models.CharField(max_length=15, blank=True)
+    participate = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.user.username}'s profile"

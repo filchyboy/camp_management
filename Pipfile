@@ -5,6 +5,7 @@ name = "pypi"
 
 [packages]
 python-dotenv = "*"
+django-allauth = "*"
 
 [dev-packages]
 autopep8 = "*"
