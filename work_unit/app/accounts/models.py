@@ -10,7 +10,8 @@ class CustomUserManager(UserManager):
 
 
 class CustomUser(AbstractUser):
-    email = models.EmailField(_('email address'), unique=True)  # Add this line
+    email = models.EmailField(
+        _('email address'), unique=True, blank=True, null=True)
     objects = CustomUserManager()
 
     def __str__(self):
