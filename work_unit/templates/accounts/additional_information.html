@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Additional Details</h2>
+<form method="post">
+    {% csrf_token %}
+    <div class="form-group">
+        <label for="{{ form.first_name.id_for_label }}">First Name:</label>
+        {{ form.first_name }}
+    </div>
+    <div class="form-group">
+        <label for="{{ form.last_name.id_for_label }}">Last Name:</label>
+        {{ form.last_name }}
+    </div>
+    <div class="form-group">
+        <label for="email">Email:</label>
+        <input type="email" name="email" id="email" required />
+    </div>
+    <div class="form-group">
+        <label for="{{ form.phone_number.id_for_label }}">Phone Number:</label>
+        {{ form.phone_number }}
+    </div>
+    <div class="form-group">
+        <label for="{{ form.participate.id_for_label }}">Participate:</label>
+        {{ form.participate }}
+    </div>
+    <button type="submit">Save</button>
+</form>
+{% endblock %}

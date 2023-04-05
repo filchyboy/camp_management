@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Administrator Dashboard</h1>
+<table>
+    <tr>
+        <th>Username</th>
+        <th>Email</th>
+        <th>Category</th>
+        <th>Change Category</th>
+    </tr>
+    {% for user in users %}
+    <tr>
+        <td>{{ user.username }}</td>
+        <td>{{ user.email }}</td>
+        <td>{{ user.profile.category }}</td>
+        <td>
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="user_id" value="{{ user.id }}">
+                <select name="new_category">
+                    <option value="member">Member</option>
+                    <option value="removed_member">Removed Member</option>
+                    <option value="camper">Camper</option>
+                    <option value="observer">Observer</option>
+                    <option value="administrator">Administrator</option>
+                </select>
+                <input type="submit" value="Update">
+            </form>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

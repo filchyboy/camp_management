@@ -25,6 +25,8 @@ INSTALLED_APPS = [
     'django_extensions',
     'allauth',
     'allauth.account',
+    'django.contrib.sites',
+    'import_export'
 ]
 
 MIDDLEWARE = [
@@ -35,6 +37,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.contrib.sites.middleware.CurrentSiteMiddleware',
 ]
 
 ROOT_URLCONF = 'app.urls'
@@ -42,7 +45,7 @@ ROOT_URLCONF = 'app.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates'), os.path.join(BASE_DIR, 'accounts/templates')],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -80,6 +83,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 AUTHENTICATION_BACKENDS = [
+    'allauth.account.auth_backends.AuthenticationBackend',
     'django.contrib.auth.backends.ModelBackend',
 ]
 
@@ -102,16 +106,27 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGOUT_REDIRECT_URL = 'work_unit:homepage'
 
+SITE_ID = 1
+
 ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_CONFIRM_EMAIL_ON_GET = True
+ACCOUNT_SIGNUP_REDIRECT_URL = 'accounts:additional_information'
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_HOST = 'mail.brachiator.com'
+# EMAIL_PORT = 465
+# EMAIL_USE_TLS = False
+# EMAIL_HOST_USER = 'swingcityops@brachiator.com'  # Your Gmail address
+# # Your Gmail password (consider using environment variables or Django secrets)
+# EMAIL_HOST_PASSWORD = 'iF[anOT3q.5-'
 # Use this for development; replace with a suitable email backend for production
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'swingcityops@gmail.com'
-EMAIL_HOST_PASSWORD = 'bomjlwvzdqaujkcq'
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_HOST = 'smtp.gmail.com'
+# EMAIL_PORT = 587
+# EMAIL_USE_TLS = True
+# EMAIL_HOST_USER = 'swingcityops@gmail.com'
+# EMAIL_HOST_PASSWORD = 'bomjlwvzdqaujkcq'

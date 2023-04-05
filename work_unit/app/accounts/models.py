@@ -35,8 +35,25 @@ class UserProfile(models.Model):
     phone_number = models.CharField(max_length=15, blank=True)
     participate = models.BooleanField(default=False)
 
+    # Add your new fields here:
+    legal_name = models.CharField(max_length=255, blank=True)
+    playa_name = models.CharField(max_length=255, blank=True)
+    staging_date = models.DateField(null=True, blank=True)
+    arrival_date = models.DateField(null=True, blank=True)
+    departure_date = models.DateField(null=True, blank=True)
+    departure_staging_date = models.DateField(null=True, blank=True)
+    hash_id = models.CharField(max_length=255, blank=True)
+    arrival_staging_location = models.CharField(max_length=255, blank=True)
+    departure_staging_location = models.CharField(max_length=255, blank=True)
+    ride_share_status = models.CharField(max_length=255, blank=True)
+    camp_score = models.CharField(max_length=255, blank=True)
+    work_unit = models.CharField(max_length=255, blank=True)
+    work_unit_average = models.CharField(max_length=255, blank=True)
+    camp_class = models.CharField(max_length=255, blank=True)
+
     def __str__(self):
         return f"{self.user.username}'s profile"
+
 
 
 @receiver(post_save, sender=CustomUser)
