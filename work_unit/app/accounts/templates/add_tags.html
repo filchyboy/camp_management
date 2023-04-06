@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Add Tags</h2>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Add</button>
+</form>
+<p>
+    <a href="{% url 'end_interview' %}">End Interview</a>
+</p>
+{% endblock %}

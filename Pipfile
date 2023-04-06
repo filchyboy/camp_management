@@ -5,6 +5,9 @@ name = "pypi"
 
 [packages]
 python-dotenv = "*"
+django-allauth = "*"
+uuid = "*"
+django-import-export = "*"
 
 [dev-packages]
 autopep8 = "*"

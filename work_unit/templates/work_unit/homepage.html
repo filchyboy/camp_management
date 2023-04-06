@@ -1,27 +1,16 @@
-{% extends "base.html" %}
-
-{% block title %}
-Page Title
-{% endblock %}
+{% extends 'base.html' %}
 
 {% block content %}
-<h1>Welcome to the Page</h1>
-<p>This is the content of the page.</p>
+<h1>Welcome to Work Unit</h1>
+<p>This is the home page.</p>
+<p>To get started, please choose an option:</p>
+<ul>
+    <li><a href="{% url 'accounts:register' %}">Register</a></li>
+    <li><a href="{% url 'accounts:login' %}">Login</a></li>
+    <li><a href="{% url 'accounts:logout' %}">Logout</a></li>
+    <li><a href="{% url 'accounts:admin_dashboard' %}">Admin</a></li>
+    {% if user.is_authenticated %}
+    <li><a href="{% url 'start_interview' %}">Start Interview</a></li>
+    {% endif %}
+</ul>
 {% endblock %}
-
-
-
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Homepage</title>
-</head>
-
-<body>
-    <h1>Welcome to the homepage!</h1>
-</body>
-
-</html>
