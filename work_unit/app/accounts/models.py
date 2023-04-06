@@ -60,3 +60,24 @@ class UserProfile(models.Model):
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
         UserProfile.objects.create(user=instance)
+
+
+class Interview(models.Model):
+    interviewer = models.ForeignKey(
+        CustomUser, on_delete=models.CASCADE, related_name='interviews')
+    start_time = models.DateTimeField()
+    end_time = models.DateTimeField(null=True, blank=True)
+
+    def __str__(self):
+        return f"Interview by {self.interviewer}"
+
+
+class InterviewMention(models.Model):
+    interview = models.ForeignKey(
+        Interview, on_delete=models.CASCADE, related_name='mentions')
+    mentioned_user = models.ForeignKey(
+        CustomUser, on_delete=models.CASCADE, related_name='mentions')
+    count = models.PositiveIntegerField(default=0)
+
+    def __str__(self):
+        return f"{self.mentioned_user} mentioned {self.count} times"

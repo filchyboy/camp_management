@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
-from .models import CustomUser, UserProfile
+from .models import CustomUser, UserProfile, Interview
 
 
 class CustomUserCreationForm(UserCreationForm):
@@ -32,3 +32,16 @@ class AdminUserProfileForm(forms.ModelForm):
             'departure_staging_location', 'ride_share_status', 'camp_score', 'work_unit',
             'work_unit_average', 'camp_class',
         )
+
+# forms.py
+
+
+class InterviewForm(forms.ModelForm):
+    class Meta:
+        model = Interview
+        fields = ('interviewer',)
+
+
+class MentionForm(forms.Form):
+    mentioned_user = forms.ModelChoiceField(queryset=CustomUser.objects.all())
+    count = forms.IntegerField(min_value=1)

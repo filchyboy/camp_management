@@ -1,8 +1,9 @@
 from django.contrib import admin
-from .models import CustomUser, UserProfile
+from .models import CustomUser, UserProfile, Interview, InterviewMention
 from .forms import UserProfileForm, AdminUserProfileForm
 from import_export.admin import ImportExportModelAdmin
 from .resources import UserProfileResource
+
 
 admin.site.register(CustomUser)
 
@@ -50,4 +51,20 @@ class UserProfileAdmin(ImportExportModelAdmin):
     list_per_page = 25
     ordering = ('user',)  # Default ordering
 
+
+class InterviewAdmin(admin.ModelAdmin):
+    list_display = ('interviewer', 'start_time', 'end_time')
+    search_fields = ('interviewer__username', 'start_time', 'end_time')
+    list_filter = ('interviewer', 'start_time', 'end_time')
+
+
+class InterviewMentionAdmin(admin.ModelAdmin):
+    list_display = ('interview', 'mentioned_user', 'count')
+    search_fields = ('interview__interviewer__username',
+                     'mentioned_user__username')
+    list_filter = ('interview__interviewer', 'mentioned_user')
+
+
 admin.site.register(UserProfile, UserProfileAdmin)
+admin.site.register(Interview, InterviewAdmin)
+admin.site.register(InterviewMention, InterviewMentionAdmin)

@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% block extrahead %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" crossorigin="anonymous"></script>
+{% endblock %}
+
+
+
+<div class="container">
+    <h1>Start Interview</h1>
+    <form method="POST" id="userForm">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="mentionedUsers">Mentioned Users</label>
+            <div class="input-container">
+                <input type="text" class="form-control input-field" id="mentionedUsers" name="mentioned_users"
+                    placeholder="Type user names here...">
+            </div>
+        </div>
+        <div id="error-msg" style="color: red; display: none;">
+            Invalid user name. Please enter a valid user name.
+        </div>
+    </form>
+    <form action="{% url 'end_interview' %}" method="post">
+        {% csrf_token %}
+        <button type="submit">End Interview</button>
+    </form>
+
+    <h2>Mentioned Users:</h2>
+    <ul id="mentionedUsersList">
+    </ul>
+</div>
+
+<script>
+    var jq = jQuery.noConflict();
+
+    var users = {{ user_fullnames_json | safe }};
+
+
+    jq(document).ready(function () {
+        console.log("Users list:", users); // Log users list
+        jq("#mentionedUsers").autocomplete({
+            source: users,
+            select: function (event, ui) {
+                event.preventDefault();
+                jq("#mentionedUsers").val(ui.item.label);
+            }
+        });
+
+        jq("#userForm").submit(function (event) {
+            event.preventDefault();
+            console.log("Form submitted"); // Log form submission
+            if (validateForm()) {
+                console.log("Valid user"); // Log valid user
+                jq("#mentionedUsersList").append('<li>' + jq("#mentionedUsers").val() + '</li>');
+                jq("#mentionedUsers").val('');
+                jq("#error-msg").hide();
+            } else {
+                console.log("Invalid user"); // Log invalid user
+                jq("#error-msg").show();
+            }
+        });
+    });
+
+    function validateForm() {
+        var mentionedUserName = jq("#mentionedUsers").val();
+        console.log("Entered user name:", mentionedUserName);
+        console.log("Users array:", users);
+        var isValid = users.includes(mentionedUserName);
+        console.log("Is valid:", isValid);
+        return isValid;
+    }
+
+
+
+</script>
+
+
+{% endblock %}

@@ -5,10 +5,12 @@
 <p>This is the home page.</p>
 <p>To get started, please choose an option:</p>
 <ul>
-<li><a href="{% url 'accounts:register' %}">Register</a></li>
-<li><a href="{% url 'accounts:login' %}">Login</a></li>
-<li><a href="{% url 'accounts:logout' %}">Logout</a></li>
-<li><a href="{% url 'accounts:admin_dashboard' %}">Admin</a></li>
-
+    <li><a href="{% url 'accounts:register' %}">Register</a></li>
+    <li><a href="{% url 'accounts:login' %}">Login</a></li>
+    <li><a href="{% url 'accounts:logout' %}">Logout</a></li>
+    <li><a href="{% url 'accounts:admin_dashboard' %}">Admin</a></li>
+    {% if user.is_authenticated %}
+    <li><a href="{% url 'start_interview' %}">Start Interview</a></li>
+    {% endif %}
 </ul>
 {% endblock %}
