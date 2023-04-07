@@ -1,46 +1,45 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h2>User Profile</h2>
-    {% if user.profile.category == "member" %}
-    <p>First Name: {{ user.profile.first_name }}</p>
-    <p>Last Name: {{ user.profile.last_name }}</p>
-    <p>Legal Name: {{ user.profile.legal_name }}</p>
-    <p>Playa Name: {{ user.profile.playa_name }}</p>
-    <p>Phone Number: {{ user.profile.phone_number }}</p>
-    <p>Email: {{ user.profile.email }}</p>
-    <p>Hash ID: {{ user.profile.hash_id }}</p>
-    <p>Camp Score: {{ user.profile.camp_score }}</p>
-    <p>Work Unit: {{ user.profile.work_unit }}</p>
-    <p>Work Unit Average: {{ user.profile.work_unit_average }}</p>
-    <p>Staging Date: {{ user.profile.staging_date }}</p>
-    <p>Arrival Date: {{ user.profile.arrival_date }}</p>
-    <p>Departure Date: {{ user.profile.departure_date }}</p>
-    <p>Departure Staging Date: {{ user.profile.departure_staging_date }}</p>
-    <p>Arrival Staging Location: {{ user.profile.arrival_staging_location }}</p>
-    <p>Departure Staging Location: {{ user.profile.departure_staging_location }}</p>
-    {% endif %}
+
+<h2>{{ user.profile.first_name }} {{ user.profile.last_name }}' Profile</h2>
+{% if user.profile.category == "member" or user.profile.category == "administrator" %}
+<h3>Actions</h3>
+{% if interviewee_first_name and interviewee_last_name %}
+<h4>Post Playa</h4>
+<ul>
+    <li>You are assigned to interview: <a
+        href="{% url 'start_interview' %}?interviewee={{ user.profile.assigned_interviewee.id }}">{{ interviewee_first_name }} {{ interviewee_last_name }}</a></li>
+    <li>You will be interviewed by: <a
+        href="{% url 'start_interview' %}?interviewer={{ user.profile.assigned_interviewer.id }}">{{ interviewer_first_name }} {{ interviewer_last_name }}</a></li>
+</ul>
+{% endif %}
+
+<h3>Identity</h3>
+<ul>
+    <li>First Name: {{ user.profile.first_name }}</li>
+    <li>Last Name: {{ user.profile.last_name }}</li>
+    <li>Legal Name: {{ user.profile.legal_name }}</li>
+    <li>Playa Name: {{ user.profile.playa_name }}</li>
+    <li>Phone Number: {{ user.profile.phone_number }}</li>
+    <li>Email: {{ user.email }}</li>
+    <li>Hash ID: {{ user.profile.hash_id }}</li>
+</ul>
+<h3>Experience</h3>
+<ul>
+    <li>Camp Score: {{ user.profile.camp_score }}</li>
+    <li>Work Unit: {{ user.profile.work_unit }}</li>
+    <li>Work Unit Average: {{ user.profile.work_unit_average }}</li>
+    <li>Years: </li>
+</ul>
+<h3>Logistics</h3>
+<ul>
+    <li>Staging Date: {{ user.profile.staging_date }}</li>
+    <li>Arrival Date: {{ user.profile.arrival_date }}</li>
+    <li>Departure Date: {{ user.profile.departure_date }}</li>
+    <li>Departure Staging Date: {{ user.profile.departure_staging_date }}</li>
+    <li>Arrival Staging Location: {{ user.profile.arrival_staging_location }}</li>
+    <li>Departure Staging Location: {{ user.profile.departure_staging_location }}</li>
+</ul>
+{% endif %}
 {% endblock %}
-
-{% if user.profile.category == 'member' %}
-<h3>Welcome, Member!</h3>
-
-{% if user.profile.participate %}
-<p>You are participating in the event!</p>
-{% else %}
-<p>You are not participating in the event.</p>
-{% endif %}
-
-{% elif user.profile.category == 'administrator' %}
-<h3>Welcome, Administrator!</h3>
-
-{% if user.profile.participate %}
-<p>You are participating in the event as an administrator!</p>
-{% else %}
-<p>You are not participating in the event as an administrator.</p>
-{% endif %}
-
-{% else %}
-<h3>No Category Assigned</h3>
-<!-- Show content for users without a category -->
-{% endif %}

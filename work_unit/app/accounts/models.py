@@ -35,6 +35,11 @@ class UserProfile(models.Model):
     phone_number = models.CharField(max_length=15, blank=True)
     participate = models.BooleanField(default=False)
 
+    assigned_interviewee = models.ForeignKey(
+        CustomUser, related_name='assigned_interviewee', null=True, on_delete=models.SET_NULL)
+    assigned_interviewer = models.ForeignKey(
+        CustomUser, related_name='assigned_interviewer', null=True, on_delete=models.SET_NULL)
+
     # Add your new fields here:
     legal_name = models.CharField(max_length=255, blank=True)
     playa_name = models.CharField(max_length=255, blank=True)
@@ -53,6 +58,7 @@ class UserProfile(models.Model):
 
     def __str__(self):
         return f"{self.user.username}'s profile"
+
 
 
 

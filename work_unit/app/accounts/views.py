@@ -4,18 +4,21 @@ from django.contrib import messages
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
-import uuid
 from django.contrib.auth import login
-from .models import CustomUser, UserProfile
+from .models import CustomUser, UserProfile, Interview, InterviewMention
 from allauth.account.utils import send_email_confirmation
 from allauth.account.signals import email_confirmed
 from django.dispatch import receiver
 from django.contrib.auth.decorators import user_passes_test
-from .models import Interview, InterviewMention
 from .forms import InterviewForm, MentionForm
 from django.utils import timezone
 import json
-from django.core.serializers import serialize
+from django.contrib.auth.decorators import user_passes_test
+from django.db.models import F
+from django.db import models
+
+
+
 
 
 
@@ -35,6 +38,7 @@ def register(request):
         form = CustomUserCreationForm()
     return render(request, 'accounts/register.html', {'form': form})
 
+
 @login_required
 def profile(request):
     user_profile = request.user.profile
@@ -46,7 +50,28 @@ def profile(request):
             return redirect('accounts:profile')
     else:
         form = UserProfileForm(instance=user_profile)
-    return render(request, 'accounts/profile.html', {'form': form})
+
+    interviewee_first_name = ""
+    interviewee_last_name = ""
+    interviewer_first_name = ""
+    interviewer_last_name = ""
+
+    if request.user.profile.assigned_interviewee:
+        interviewee_first_name = request.user.profile.assigned_interviewee.profile.first_name
+        interviewee_last_name = request.user.profile.assigned_interviewee.profile.last_name
+
+    if request.user.profile.assigned_interviewer:
+        interviewer_first_name = request.user.profile.assigned_interviewer.profile.first_name
+        interviewer_last_name = request.user.profile.assigned_interviewer.profile.last_name
+
+    context = {
+        'form': form,
+        'interviewee_first_name': interviewee_first_name,
+        'interviewee_last_name': interviewee_last_name,
+        'interviewer_first_name': interviewer_first_name,
+        'interviewer_last_name': interviewer_last_name,
+    }
+    return render(request, 'accounts/profile.html', context)
 
 
 @login_required
@@ -97,7 +122,6 @@ def is_administrator(user):
     return user.is_authenticated and user.profile.category == 'administrator'
 
 
-@user_passes_test(is_administrator)
 def admin_dashboard(request):
     users = CustomUser.objects.all()
     if request.method == 'POST':
@@ -110,8 +134,8 @@ def admin_dashboard(request):
             request, f"{user.username}'s category has been updated.")
         return redirect('accounts:admin_dashboard')
 
-    return render(request, 'accounts/admin_dashboard.html', {'users': users})
-
+    is_admin = is_administrator(request.user)  # Add this line
+    return render(request, 'accounts/admin_dashboard.html', {'users': users, 'is_admin': is_admin})
 
 def start_interview(request):
     if request.method == 'POST':
@@ -131,15 +155,16 @@ def start_interview(request):
     else:
         form = InterviewForm(initial={'interviewer': request.user})
 
-    users = CustomUser.objects.all()
+    users = CustomUser.objects.filter(
+        profile__category='member', profile__participate=True)
     user_fullnames = [
         f"{user.first_name.strip()} {user.last_name.strip()}".strip() for user in users]
 
-    print("User full names:", user_fullnames)  # Log user_fullnames
-
     user_fullnames_json = json.dumps(user_fullnames)
 
-    return render(request, 'start_interview.html', {'form': form, 'user_fullnames_json': user_fullnames_json})
+    assigned_interviewee = request.user.profile.assigned_interviewee
+
+    return render(request, 'start_interview.html', {'form': form, 'user_fullnames_json': user_fullnames_json, 'assigned_interviewee': assigned_interviewee})
 
 
 def end_interview(request):
@@ -171,3 +196,65 @@ def add_tags(request):
     else:
         form = MentionForm()
     return render(request, 'add_tags.html', {'form': form})
+
+
+@user_passes_test(is_administrator)
+def initiate_interview_process(request):
+    eligible_users = CustomUser.objects.annotate(
+        is_member=models.Case(
+            models.When(profile__category='member', then=models.Value(True)),
+            default=models.Value(False),
+            output_field=models.BooleanField()
+        ),
+        is_participant=models.Case(
+            models.When(profile__participate=True, then=models.Value(True)),
+            default=models.Value(False),
+            output_field=models.BooleanField()
+        )
+    ).filter(is_member=True, is_participant=True)
+
+    import random
+    shuffled_users = random.sample(list(eligible_users), len(eligible_users))
+
+    # Shift the list of shuffled users by one position
+    shifted_users = shuffled_users[1:] + shuffled_users[:1]
+
+    # Pair users randomly without self-pairing
+    random_pairs = list(zip(shuffled_users, shifted_users))
+
+    # Assign interviewee and interviewer to each user's profile
+    for pair in random_pairs:
+        interviewer, interviewee = pair
+        interviewer.profile.assigned_interviewee = interviewee
+        interviewer.profile.save()
+        interviewee.profile.assigned_interviewer = interviewer
+        interviewee.profile.save()
+
+    return redirect('accounts:interview_process_success')
+
+
+
+def interview_process_success(request):
+    return render(request, 'accounts/interview_process_success.html')
+
+
+@login_required
+def my_interviews(request):
+    profile = request.user.profile
+    assigned_interviewee = profile.assigned_interviewee
+    assigned_interviewer = profile.assigned_interviewer
+
+    context = {
+        'assigned_interviewee': assigned_interviewee,
+        'assigned_interviewer': assigned_interviewer,
+    }
+
+    return render(request, 'accounts/my_interviews.html', context)
+
+
+@user_passes_test(is_administrator)
+def interview_pairs(request):
+    pairs = UserProfile.objects.filter(category='member', participate=True).select_related(
+        'assigned_interviewer', 'assigned_interviewee')
+    context = {'pairs': pairs}
+    return render(request, 'accounts/interview_pairs.html', context)

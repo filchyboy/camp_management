@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Interview Pairs</h2>
+<table>
+    <thead>
+        <tr>
+            <th>Interviewer</th>
+            <th>Interviewee</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for pair in pairs %}
+        <tr>
+            <td>{{ pair.assigned_interviewer.username }}</td>
+            <td>{{ pair.assigned_interviewee.username }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

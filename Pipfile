@@ -8,6 +8,7 @@ python-dotenv = "*"
 django-allauth = "*"
 uuid = "*"
 django-import-export = "*"
+pillow = "*"
 
 [dev-packages]
 autopep8 = "*"

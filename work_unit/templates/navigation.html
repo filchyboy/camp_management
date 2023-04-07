@@ -1,0 +1,20 @@
+
+<ul>
+    <li><a href="/">Home</a></li>
+{% if user.is_authenticated %}
+    <li><a href="{% url 'accounts:logout' %}">Logout</a></li>
+    <li><a href="{% url 'accounts:profile' %}">Profile</a></li>
+{% else %}
+    <li><a href="{% url 'accounts:login' %}">Login</a></li>
+    <li><a href="{% url 'accounts:register' %}">Join SC</a></li>
+{% endif %}
+{% if user.profile.category == "administrator" %}
+    <li><a href="{% url 'accounts:admin_dashboard' %}">Camp Leads</a></li>
+{% endif %}
+</ul>
+
+{% if user.is_staff %}
+<ul>
+    <li><a href="{% url 'admin:index' %}" class="button">Admin Dashboard</a></li>
+</ul>
+{% endif %}

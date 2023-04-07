@@ -41,7 +41,10 @@
 
 <body>
     <header>
-        
+            {% include 'navigation.html' %}
+            <!-- Header content here -->
+            {% block header %}
+            {% endblock %}
         <!-- Navigation menu, logo, etc. -->
     </header>
 
@@ -60,7 +63,10 @@
     </main>
 
     <footer>
-        <!-- Footer content -->
+            {% include 'navigation.html' %}
+            <!-- Header content here -->
+            {% block footer %}
+            {% endblock %}
     </footer>
 
     <!-- Common JavaScript files -->
