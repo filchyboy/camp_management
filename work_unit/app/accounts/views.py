@@ -49,13 +49,7 @@ def profile(request):
         form = UserProfileForm(
             request.POST, request.FILES, instance=user_profile)
 
-        if 'cropped_image' in request.FILES:
-            user_profile.profile_image = request.FILES['cropped_image']
-            user_profile.save()
-            messages.success(request, 'Profile image updated successfully!')
-            return redirect('accounts:profile')
-
-        elif form.is_valid():
+        if form.is_valid():
             form.save()
             messages.success(request, 'Profile updated successfully!')
             return redirect('accounts:profile')
