@@ -26,7 +26,8 @@ INSTALLED_APPS = [
     'allauth',
     'allauth.account',
     'django.contrib.sites',
-    'import_export'
+    'import_export',
+    'imagekit'
 ]
 
 MIDDLEWARE = [
@@ -120,17 +121,7 @@ ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_CONFIRM_EMAIL_ON_GET = True
 ACCOUNT_SIGNUP_REDIRECT_URL = 'accounts:additional_information'
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-# EMAIL_HOST = 'mail.brachiator.com'
-# EMAIL_PORT = 465
-# EMAIL_USE_TLS = False
-# EMAIL_HOST_USER = 'swingcityops@brachiator.com'  # Your Gmail address
-# # Your Gmail password (consider using environment variables or Django secrets)
-# EMAIL_HOST_PASSWORD = 'iF[anOT3q.5-'
-# Use this for development; replace with a suitable email backend for production
-# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-# EMAIL_HOST = 'smtp.gmail.com'
-# EMAIL_PORT = 587
-# EMAIL_USE_TLS = True
-# EMAIL_HOST_USER = 'swingcityops@gmail.com'
-# EMAIL_HOST_PASSWORD = 'bomjlwvzdqaujkcq'
+
+# Media files
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

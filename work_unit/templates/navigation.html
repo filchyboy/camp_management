@@ -1,0 +1,23 @@
+<div id="content">
+    <div id="horz-list">
+{% if user.is_authenticated %}
+        <ul>
+            <li><a href="/" class="button">Home</a></li>
+            <li><a href="{% url 'accounts:logout' %}" class="button">Logout</a></li>
+            <li><a href="{% url 'accounts:profile' %}" class="button">Profile</a></li>
+{% else %}
+            <li><a href="{% url 'accounts:login' %}" class="button">Login</a></li>
+            <li><a href="{% url 'accounts:register' %}" class="button">Join SC</a></li>
+{% endif %}
+{% if user.profile.category == "administrator" %}
+            <li><a href="{% url 'accounts:admin_dashboard' %}" class="button">Camp Leads</a></li>
+{% endif %}
+        </ul>
+    </div>
+</div>  
+
+{% if user.is_staff %}
+<ul>
+    <li><a href="{% url 'admin:index' %}" class="button">Admin Dashboard</a></li>
+</ul>
+{% endif %}

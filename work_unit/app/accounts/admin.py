@@ -1,34 +1,14 @@
 from django.contrib import admin
-from .models import CustomUser, UserProfile, Interview, InterviewMention
+from django.urls import path, reverse
+from django.utils.html import format_html
+from .models import CustomUser, UserProfile, Interview, InterviewMention, AppConfig
 from .forms import UserProfileForm, AdminUserProfileForm
 from import_export.admin import ImportExportModelAdmin
 from .resources import UserProfileResource
+from . import views
 
 
 admin.site.register(CustomUser)
-
-
-class UserProfileAdmin(admin.ModelAdmin):
-    form = UserProfileForm
-    fields = ('user', 'category', 'first_name',
-              'last_name', 'phone_number', 'participate')
-    list_display = ('user', 'category', 'first_name',
-                    'last_name', 'phone_number', 'participate')
-    search_fields = ('user__username', 'first_name', 'last_name')
-
-
-class UserProfileAdmin(admin.ModelAdmin):
-    form = AdminUserProfileForm
-    fields = (
-        'user', 'category', 'first_name', 'last_name', 'phone_number', 'participate',
-        'legal_name', 'playa_name', 'staging_date', 'arrival_date', 'departure_date',
-        'departure_staging_date', 'hash_id', 'arrival_staging_location',
-        'departure_staging_location', 'ride_share_status', 'camp_score', 'work_unit',
-        'work_unit_average', 'camp_class',
-    )
-    list_display = ('user', 'category', 'first_name',
-                    'last_name', 'phone_number', 'participate')
-    search_fields = ('user__username', 'first_name', 'last_name')
 
 
 class UserProfileAdmin(ImportExportModelAdmin):
@@ -44,12 +24,24 @@ class UserProfileAdmin(ImportExportModelAdmin):
     list_display = ('user', 'category', 'first_name',
                     'last_name', 'phone_number', 'participate')
     search_fields = ('user__username', 'first_name', 'last_name')
-    # Add any other fields you want to filter by
     list_filter = ('category', 'participate', 'arrival_date', 'departure_date')
-    # Add any other fields you want to edit
     list_editable = ('category', 'participate')
     list_per_page = 25
-    ordering = ('user',)  # Default ordering
+    ordering = ('user',)
+
+    def get_urls(self):
+        urls = super().get_urls()
+        custom_urls = [
+            path('initiate_interview_process/', self.admin_site.admin_view(
+                views.initiate_interview_process), name='initiate_interview_process'),
+        ]
+        return custom_urls + urls
+
+    def changelist_view(self, request, extra_context=None):
+        extra_context = extra_context or {}
+        extra_context['initiate_interview_process_url'] = reverse(
+            'admin:initiate_interview_process')
+        return super(UserProfileAdmin, self).changelist_view(request, extra_context=extra_context)
 
 
 class InterviewAdmin(admin.ModelAdmin):
@@ -68,3 +60,4 @@ class InterviewMentionAdmin(admin.ModelAdmin):
 admin.site.register(UserProfile, UserProfileAdmin)
 admin.site.register(Interview, InterviewAdmin)
 admin.site.register(InterviewMention, InterviewMentionAdmin)
+admin.site.register(AppConfig)

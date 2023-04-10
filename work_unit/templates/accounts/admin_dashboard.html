@@ -2,6 +2,15 @@
 
 {% block content %}
 <h1>Administrator Dashboard</h1>
+
+{% if is_admin %}
+<a href="{% url 'accounts:initiate_interview_process' %}" class="button">Initiate Interview Process</a>
+<a href="{% url 'accounts:interview_pairs' %}">View Interview Pairs</a>
+
+{% endif %}
+
+
+
 <table>
     <tr>
         <th>Username</th>
