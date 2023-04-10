@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .forms import CustomUserCreationForm, UserProfileForm
+from .forms import ProfileImageForm, CustomUserCreationForm, UserProfileForm
 from django.contrib import messages
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
@@ -12,13 +12,16 @@ from django.dispatch import receiver
 from django.contrib.auth.decorators import user_passes_test
 from .forms import InterviewForm, MentionForm
 from django.utils import timezone
-import json
+import json, os
 from django.contrib.auth.decorators import user_passes_test
-from django.db.models import F
 from django.db import models
-
-
-
+from PIL import Image
+from django.core.files.storage import default_storage
+from .models import get_profile_image_filename
+from io import BytesIO
+import base64
+from django.core.files.base import ContentFile
+from .models import AppConfig
 
 
 
@@ -43,11 +46,20 @@ def register(request):
 def profile(request):
     user_profile = request.user.profile
     if request.method == 'POST':
-        form = UserProfileForm(request.POST, instance=user_profile)
-        if form.is_valid():
+        form = UserProfileForm(
+            request.POST, request.FILES, instance=user_profile)
+
+        if 'cropped_image' in request.FILES:
+            user_profile.profile_image = request.FILES['cropped_image']
+            user_profile.save()
+            messages.success(request, 'Profile image updated successfully!')
+            return redirect('accounts:profile')
+
+        elif form.is_valid():
             form.save()
             messages.success(request, 'Profile updated successfully!')
             return redirect('accounts:profile')
+
     else:
         form = UserProfileForm(instance=user_profile)
 
@@ -72,6 +84,50 @@ def profile(request):
         'interviewer_last_name': interviewer_last_name,
     }
     return render(request, 'accounts/profile.html', context)
+
+
+@login_required
+def upload_photo(request):
+    if request.method == 'POST':
+        form = ProfileImageForm(request.POST, instance=request.user.profile)
+        if form.is_valid():
+            profile = form.save(commit=False)
+            image_data = request.POST.get('base64_image')
+            image_data = image_data.split(',')[1]
+            image = Image.open(BytesIO(base64.b64decode(image_data)))
+
+            crop_x = int(round(float(request.POST.get('crop_x') or 0)))
+            crop_y = int(round(float(request.POST.get('crop_y') or 0)))
+            crop_width = int(round(float(request.POST.get('crop_width') or 0)))
+            crop_height = int(
+                round(float(request.POST.get('crop_height') or 0)))
+
+            # Create a file name for the cropped image
+            image_name = get_profile_image_filename(
+                profile, 'cropped_image.webp')  # Change the file extension to .webp
+            image_path = os.path.join('profile_pics', image_name)
+
+            # Save the cropped image using default_storage
+            with BytesIO() as buffer:
+                # Change the format to 'WEBP'
+                image.save(buffer, format='WEBP')
+                buffer.seek(0)
+                default_storage.save(image_path, buffer)
+
+            profile.profile_image = image_path
+            profile.save()
+            messages.success(request, 'Profile photo uploaded successfully.')
+            return redirect('accounts:profile')
+
+        else:
+            messages.error(request, 'Error uploading profile photo.')
+            return redirect('accounts:upload_photo')
+
+    else:
+        form = ProfileImageForm(instance=request.user.profile)
+        min_crop_dimension = AppConfig.objects.first().min_crop_dimension
+
+    return render(request, 'accounts/upload_photo.html', {'form': form, 'min_crop_dimension': min_crop_dimension})
 
 
 @login_required

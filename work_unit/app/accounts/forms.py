@@ -9,6 +9,11 @@ class CustomUserCreationForm(UserCreationForm):
         fields = ('username', 'password1', 'password2')
 
 
+class ProfileImageForm(forms.ModelForm):
+    class Meta:
+        model = UserProfile
+        fields = ['profile_image']
+
 class UserProfileForm(forms.ModelForm):
     class Meta:
         model = UserProfile
@@ -18,7 +23,7 @@ class UserProfileForm(forms.ModelForm):
             'legal_name', 'playa_name', 'staging_date', 'arrival_date', 'departure_date',
             'departure_staging_date', 'hash_id', 'arrival_staging_location',
             'departure_staging_location', 'ride_share_status', 'camp_score', 'work_unit',
-            'work_unit_average', 'camp_class',
+            'work_unit_average', 'camp_class', 'profile_image'
         )
 
 

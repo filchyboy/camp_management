@@ -9,6 +9,7 @@ django-allauth = "*"
 uuid = "*"
 django-import-export = "*"
 pillow = "*"
+django-imagekit = "*"
 
 [dev-packages]
 autopep8 = "*"

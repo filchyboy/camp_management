@@ -1,7 +1,8 @@
 from . import views
 from django.urls import path
 from django.contrib.auth import views as auth_views
-
+from django.conf import settings
+from django.conf.urls.static import static
 
 app_name = 'app.accounts'
 
@@ -19,6 +20,10 @@ urlpatterns = [
          name='interview_process_success'),
     path('my_interviews/', views.my_interviews, name='my_interviews'),
     path('interview_pairs/', views.interview_pairs, name='interview_pairs'),
-
+    path('accounts/profile/upload_photo/',
+         views.upload_photo, name='upload_photo'),
 ]
 
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL,
+                          document_root=settings.MEDIA_ROOT)

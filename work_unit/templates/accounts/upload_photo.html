@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block extra_head %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css"
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+{% endblock %}
+{% block content %}
+
+    <h2>Upload Profile Photo</h2>
+    <form method="post" enctype="multipart/form-data" id="preview-form">
+        {% csrf_token %}
+        <input type="file" name="profile_image" id="id_profile_image" required>
+        <button type="button" id="preview-button" disabled>Preview</button>
+    </form>
+    <div style="min-width: 300px; min-height: 300px;">
+        <img id="image-preview" class="cropper-image" src="#" style="display:none;" alt="Image Preview">
+    </div>
+    <form method="post" enctype="multipart/form-data" id="upload-form" style="display:none;">
+        {% csrf_token %}
+        <input type="hidden" id="crop-x" name="crop_x" value="">
+        <input type="hidden" id="crop-y" name="crop_y" value="">
+        <input type="hidden" id="crop-width" name="crop_width" value="">
+        <input type="hidden" id="crop-height" name="crop_height" value="">
+        <input type="hidden" id="base64-image" name="base64_image" value="">
+        <button type="submit">Upload</button>
+    </form>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js" crossorigin="anonymous"
+        referrerpolicy="no-referrer"></script>
+    <script>
+        const inputImage = document.querySelector('#id_profile_image');
+        const previewButton = document.querySelector('#preview-button');
+        const imagePreview = document.querySelector('#image-preview');
+        const uploadForm = document.querySelector('#upload-form');
+        const cropX = document.querySelector('#crop-x');
+        const cropY = document.querySelector('#crop-y');
+        const cropWidth = document.querySelector('#crop-width');
+        const cropHeight = document.querySelector('#crop-height');
+        const base64Image = document.querySelector('#base64-image');
+        let cropper;
+
+        inputImage.addEventListener('change', (e) => {
+            if (e.target.files && e.target.files[0]) {
+                const file = e.target.files[0];
+                const reader = new FileReader();
+
+                reader.onload = (e) => {
+                    imagePreview.src = e.target.result;
+                };
+
+                reader.readAsDataURL(file);
+            }
+        });
+
+        imagePreview.addEventListener('load', () => {
+            previewButton.disabled = false;
+        });
+
+        previewButton.addEventListener('click', () => {
+            imagePreview.style.display = 'block';
+
+            if (cropper) {
+                cropper.destroy();
+            }
+
+            cropper = new Cropper(imagePreview, {
+                aspectRatio: 1,
+                viewMode: 1,
+                minCropBoxWidth: "{{ min_crop_dimension| escapejs }}",
+                minCropBoxHeight: "{{ min_crop_dimension| escapejs }}",
+                crop: (event) => {
+                    const { detail } = event;
+                    const imageData = cropper.getImageData();
+                    const scaleX = imageData.naturalWidth / imageData.width;
+                    const scaleY = imageData.naturalHeight / imageData.height;
+
+                    cropX.value = detail.x * scaleX;
+                    cropY.value = detail.y * scaleY;
+                    cropWidth.value = detail.width * scaleX;
+                    cropHeight.value = detail.height * scaleY;
+                },
+                ready: function () {
+                    // Set initial size of the cropping window to 300x300 pixels
+                    const imageData = this.cropper.getImageData();
+                    const containerData = this.cropper.getContainerData();
+                    const scaleX = imageData.width / imageData.naturalWidth;
+                    const scaleY = imageData.height / imageData.naturalHeight;
+                    const initCropBoxWidth = "{{ min_crop_dimension| escapejs }}" * scaleX;
+                    const initCropBoxHeight = "{{ min_crop_dimension| escapejs }}" * scaleY;
+
+                    const initCropBoxData = {
+                        width: initCropBoxWidth,
+                        height: initCropBoxHeight,
+                        left: (containerData.width - initCropBoxWidth) / 2,
+                        top: (containerData.height - initCropBoxHeight) / 2,
+                    };
+                    this.cropper.setCropBoxData(initCropBoxData);
+                },
+
+            });
+
+
+            uploadForm.style.display = 'block';
+        });
+
+        uploadForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            if (cropper) {
+                cropper.getCroppedCanvas().toBlob((blob) => {
+                    const reader = new FileReader();
+
+                    reader.onload = (e) => {
+                        base64Image.value = e.target.result;
+                        uploadForm.submit();
+                    };
+
+                    reader.readAsDataURL(blob);
+                }, 'image/webp');
+            } else {
+                alert('Please select and crop an image before uploading.');
+            }
+        });
+    </script>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js" crossorigin="anonymous"
+    referrerpolicy="no-referrer"></script>
+{% endblock %}

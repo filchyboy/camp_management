@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
-
+{% load static %}
 {% block content %}
+
 
 <h2>{{ user.profile.first_name }} {{ user.profile.last_name }}' Profile</h2>
 {% if user.profile.category == "member" or user.profile.category == "administrator" %}
@@ -9,10 +10,12 @@
 <h4>Post Playa</h4>
 <ul>
     <li>You are assigned to interview: <a
-        href="{% url 'start_interview' %}?interviewee={{ user.profile.assigned_interviewee.id }}">{{ interviewee_first_name }} {{ interviewee_last_name }}</a></li>
+            href="{% url 'start_interview' %}?interviewee={{ user.profile.assigned_interviewee.id }}">{{ interviewee_first_name }} {{ interviewee_last_name }}</a></li>
     <li>You will be interviewed by: <a
-        href="{% url 'start_interview' %}?interviewer={{ user.profile.assigned_interviewer.id }}">{{ interviewer_first_name }} {{ interviewer_last_name }}</a></li>
+            href="{% url 'start_interview' %}?interviewer={{ user.profile.assigned_interviewer.id }}">{{ interviewer_first_name }} {{ interviewer_last_name }}</a></li>
 </ul>
+<a href="{% url 'app.accounts:upload_photo' %}">Upload Profile Photo</a>
+
 {% endif %}
 
 <h3>Identity</h3>

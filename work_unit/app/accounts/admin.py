@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.urls import path, reverse
 from django.utils.html import format_html
-from .models import CustomUser, UserProfile, Interview, InterviewMention
+from .models import CustomUser, UserProfile, Interview, InterviewMention, AppConfig
 from .forms import UserProfileForm, AdminUserProfileForm
 from import_export.admin import ImportExportModelAdmin
 from .resources import UserProfileResource
@@ -60,3 +60,4 @@ class InterviewMentionAdmin(admin.ModelAdmin):
 admin.site.register(UserProfile, UserProfileAdmin)
 admin.site.register(Interview, InterviewAdmin)
 admin.site.register(InterviewMention, InterviewMentionAdmin)
+admin.site.register(AppConfig)
